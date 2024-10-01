@@ -333,8 +333,8 @@ class TextSplitterNode:
             if delimiter and i < len(outputs):
                 parts = outputs[i].split(delimiter, 1)
                 if len(parts) > 1:
-                    outputs[i] = parts[0]  # Update the current output
-                    outputs.append(parts[1])  # Add the next part as a new output
+                    outputs[i] = parts[0].strip()  # Update the current output and strip whitespace
+                    outputs.append(parts[1].strip())  # Add the next part as a new output and strip whitespace
                 else:
                     outputs.append("")  # If delimiter not found, add an empty string
 
@@ -342,6 +342,10 @@ class TextSplitterNode:
         outputs = outputs[:5]  # Truncate if we have more than 5
         while len(outputs) < 5:
             outputs.append("")  # Pad with empty strings if we have less than 5
+
+        # Ensure output_1 is not empty
+        if not outputs[0]:
+            outputs[0] = input_text  # If output_1 is empty, use the entire input text
 
         return tuple(outputs)
 
