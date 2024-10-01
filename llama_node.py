@@ -312,18 +312,10 @@ class TextSplitterNode:
         return {
             "required": {
                 "input_text": ("STRING", {"multiline": True}),
-                "delimiter_1_start": ("STRING", {"default": ""}),
-                "delimiter_1_end": ("STRING", {"default": ""}),
-            },
-            "optional": {
-                "delimiter_2_start": ("STRING", {"default": ""}),
-                "delimiter_2_end": ("STRING", {"default": ""}),
-                "delimiter_3_start": ("STRING", {"default": ""}),
-                "delimiter_3_end": ("STRING", {"default": ""}),
-                "delimiter_4_start": ("STRING", {"default": ""}),
-                "delimiter_4_end": ("STRING", {"default": ""}),
-                "delimiter_5_start": ("STRING", {"default": ""}),
-                "delimiter_5_end": ("STRING", {"default": ""}),
+                "delimiter_1": ("STRING", {"default": ""}),
+                "delimiter_2": ("STRING", {"default": ""}),
+                "delimiter_3": ("STRING", {"default": ""}),
+                "delimiter_4": ("STRING", {"default": ""}),
             }
         }
     
@@ -332,44 +324,30 @@ class TextSplitterNode:
     FUNCTION = "split_text"
     CATEGORY = "LlamaApi"
 
-    def split_text(self, input_text, delimiter_1_start, delimiter_1_end, 
-                   delimiter_2_start="", delimiter_2_end="",
-                   delimiter_3_start="", delimiter_3_end="",
-                   delimiter_4_start="", delimiter_4_end="",
-                   delimiter_5_start="", delimiter_5_end=""):
-        
-        outputs = [""] * 5
-        remaining_text = input_text
+    def split_text(self, input_text, delimiter_1, delimiter_2, delimiter_3, delimiter_4):
+        delimiters = [delimiter_1, delimiter_2, delimiter_3, delimiter_4]
+        outputs = []
+        start_index = 0
 
-        for i, (start, end) in enumerate([
-            (delimiter_1_start, delimiter_1_end),
-            (delimiter_2_start, delimiter_2_end),
-            (delimiter_3_start, delimiter_3_end),
-            (delimiter_4_start, delimiter_4_end),
-            (delimiter_5_start, delimiter_5_end)
-        ]):
-            if start and end:
-                try:
-                    start_index = remaining_text.index(start) + len(start)
-                    end_index = remaining_text.index(end, start_index)
-                    outputs[i] = remaining_text[start_index:end_index]
-                    remaining_text = remaining_text[end_index + len(end):]
-                except ValueError:
-                    # If start or end delimiter not found, keep output empty
-                    pass
-            elif start:
-                # If only start delimiter is provided, take everything after it
-                try:
-                    start_index = remaining_text.index(start) + len(start)
-                    outputs[i] = remaining_text[start_index:]
-                    remaining_text = ""
-                except ValueError:
-                    pass
-            
-            if not remaining_text:
-                break
+        for i, delimiter in enumerate(delimiters):
+            if delimiter:
+                end_index = input_text.find(delimiter, start_index)
+                if end_index == -1:
+                    outputs.append(input_text[start_index:])
+                    break
+                outputs.append(input_text[start_index:end_index])
+                start_index = end_index + len(delimiter)
+            else:
+                outputs.append("")
 
-        return tuple(outputs)
+        # Add the last part (after the last delimiter or from the start if no delimiters were found)
+        outputs.append(input_text[start_index:])
+
+        # Ensure we always return 5 outputs
+        while len(outputs) < 5:
+            outputs.append("")
+
+        return tuple(outputs[:5])
 
 # Update NODE_CLASS_MAPPINGS
 NODE_CLASS_MAPPINGS["ConditionalRouterNode"] = ConditionalRouterNode
