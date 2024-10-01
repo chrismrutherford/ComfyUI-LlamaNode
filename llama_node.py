@@ -327,32 +327,32 @@ class TextSplitterNode:
 
     def split_text(self, input_text, delimiter_1, delimiter_2, delimiter_3, delimiter_4, delimiter_5):
         delimiters = [d for d in [delimiter_1, delimiter_2, delimiter_3, delimiter_4, delimiter_5] if d]
-        outputs = []
-        remaining_text = input_text
+        outputs = [""] * 5  # Initialize with 5 empty strings
 
         if not delimiters:
             # If no delimiters are provided, return the entire input text as the first output
-            outputs.append(input_text)
+            outputs[0] = input_text
         else:
+            remaining_text = input_text
             for i, delimiter in enumerate(delimiters):
-                if delimiter in remaining_text:
+                if i == 0 and delimiter in remaining_text:
+                    # For the first delimiter, split and put the first part in output_1
                     parts = remaining_text.split(delimiter, 1)
-                    outputs.append(parts[0].strip())
+                    outputs[0] = parts[0].strip()
+                    remaining_text = parts[1].strip() if len(parts) > 1 else ""
+                elif i < 4 and delimiter in remaining_text:  # We only need to process up to 4 delimiters
+                    parts = remaining_text.split(delimiter, 1)
+                    outputs[i] = parts[0].strip()
                     remaining_text = parts[1].strip()
                 else:
-                    # If the delimiter is not found, add the remaining text to the current output
-                    outputs.append(remaining_text)
-                    remaining_text = ""
+                    # If the delimiter is not found or we've processed 4 delimiters,
+                    # add the remaining text to the current output
+                    outputs[i] = remaining_text
                     break
 
-        # Add any remaining text to the last output
-        if remaining_text:
-            outputs.append(remaining_text)
-
-        # Ensure we always return exactly 5 outputs
-        outputs = outputs[:5]  # Truncate if we have more than 5
-        while len(outputs) < 5:
-            outputs.append("")  # Pad with empty strings if we have less than 5
+            # If there's still remaining text, add it to the last output
+            if remaining_text and i < 4:
+                outputs[i+1] = remaining_text
 
         return tuple(outputs)
 
