@@ -330,14 +330,20 @@ class TextSplitterNode:
         outputs = []
         remaining_text = input_text
 
-        for i, delimiter in enumerate(delimiters):
-            if delimiter in remaining_text:
-                parts = remaining_text.split(delimiter, 1)
-                outputs.append(parts[0].strip())
-                remaining_text = parts[1].strip()
-            else:
-                outputs.append(remaining_text)
-                remaining_text = ""
+        if not delimiters:
+            # If no delimiters are provided, return the entire input text as the first output
+            outputs.append(input_text)
+        else:
+            for i, delimiter in enumerate(delimiters):
+                if delimiter in remaining_text:
+                    parts = remaining_text.split(delimiter, 1)
+                    outputs.append(parts[0].strip())
+                    remaining_text = parts[1].strip()
+                else:
+                    # If the delimiter is not found, add the remaining text to the current output
+                    outputs.append(remaining_text)
+                    remaining_text = ""
+                    break
 
         # Add any remaining text to the last output
         if remaining_text:
