@@ -327,29 +327,23 @@ class TextSplitterNode:
 
     def split_text(self, input_text, delimiter_1, delimiter_2, delimiter_3, delimiter_4, delimiter_5):
         delimiters = [delimiter_1, delimiter_2, delimiter_3, delimiter_4, delimiter_5]
-        outputs = []
-        start_index = 0
+        outputs = [input_text]  # Start with the entire input text as the first output
 
         for i, delimiter in enumerate(delimiters):
-            if delimiter:
-                end_index = input_text.find(delimiter, start_index)
-                if end_index == -1:
-                    outputs.append(input_text[start_index:])
-                    break
-                outputs.append(input_text[start_index:end_index])
-                start_index = end_index + len(delimiter)
-            else:
-                outputs.append("")
+            if delimiter and i < len(outputs):
+                parts = outputs[i].split(delimiter, 1)
+                if len(parts) > 1:
+                    outputs[i] = parts[0]  # Update the current output
+                    outputs.append(parts[1])  # Add the next part as a new output
+                else:
+                    outputs.append("")  # If delimiter not found, add an empty string
 
-        # Add the last part (after the last delimiter or from the start if no delimiters were found)
-        if len(outputs) < 5:
-            outputs.append(input_text[start_index:])
-
-        # Ensure we always return 5 outputs
+        # Ensure we always return exactly 5 outputs
+        outputs = outputs[:5]  # Truncate if we have more than 5
         while len(outputs) < 5:
-            outputs.append("")
+            outputs.append("")  # Pad with empty strings if we have less than 5
 
-        return tuple(outputs[:5])
+        return tuple(outputs)
 
 # Update NODE_CLASS_MAPPINGS
 NODE_CLASS_MAPPINGS["ConditionalRouterNode"] = ConditionalRouterNode
