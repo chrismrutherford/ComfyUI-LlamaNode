@@ -312,11 +312,11 @@ class TextSplitterNode:
         return {
             "required": {
                 "input_text": ("STRING", {"multiline": True}),
-                "delimiter_1": ("STRING", {"default": ""}),
-                "delimiter_2": ("STRING", {"default": ""}),
-                "delimiter_3": ("STRING", {"default": ""}),
-                "delimiter_4": ("STRING", {"default": ""}),
-                "delimiter_5": ("STRING", {"default": ""}),
+                "delimiter_1": ("STRING", {"default": "#Q1:"}),
+                "delimiter_2": ("STRING", {"default": "#Q2:"}),
+                "delimiter_3": ("STRING", {"default": "#Q3:"}),
+                "delimiter_4": ("STRING", {"default": "#Q4:"}),
+                "delimiter_5": ("STRING", {"default": "#Q5:"}),
             }
         }
     
