@@ -316,6 +316,7 @@ class TextSplitterNode:
                 "delimiter_2": ("STRING", {"default": ""}),
                 "delimiter_3": ("STRING", {"default": ""}),
                 "delimiter_4": ("STRING", {"default": ""}),
+                "delimiter_5": ("STRING", {"default": ""}),
             }
         }
     
@@ -324,8 +325,8 @@ class TextSplitterNode:
     FUNCTION = "split_text"
     CATEGORY = "LlamaApi"
 
-    def split_text(self, input_text, delimiter_1, delimiter_2, delimiter_3, delimiter_4):
-        delimiters = [delimiter_1, delimiter_2, delimiter_3, delimiter_4]
+    def split_text(self, input_text, delimiter_1, delimiter_2, delimiter_3, delimiter_4, delimiter_5):
+        delimiters = [delimiter_1, delimiter_2, delimiter_3, delimiter_4, delimiter_5]
         outputs = []
         start_index = 0
 
@@ -341,7 +342,8 @@ class TextSplitterNode:
                 outputs.append("")
 
         # Add the last part (after the last delimiter or from the start if no delimiters were found)
-        outputs.append(input_text[start_index:])
+        if len(outputs) < 5:
+            outputs.append(input_text[start_index:])
 
         # Ensure we always return 5 outputs
         while len(outputs) < 5:
