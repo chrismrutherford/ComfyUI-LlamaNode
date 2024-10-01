@@ -335,24 +335,27 @@ class TextSplitterNode:
         else:
             remaining_text = input_text
             for i, delimiter in enumerate(delimiters):
-                if i == 0 and delimiter in remaining_text:
-                    # For the first delimiter, split and put the first part in output_1
+                if delimiter in remaining_text:
                     parts = remaining_text.split(delimiter, 1)
-                    outputs[0] = parts[0].strip()
+                    if i == 0:
+                        # For the first delimiter, put everything before it in output_1
+                        outputs[0] = parts[0].strip()
+                    else:
+                        # For subsequent delimiters, put the text between delimiters in the corresponding output
+                        outputs[i] = parts[0].strip()
                     remaining_text = parts[1].strip() if len(parts) > 1 else ""
-                elif i < 4 and delimiter in remaining_text:  # We only need to process up to 4 delimiters
-                    parts = remaining_text.split(delimiter, 1)
-                    outputs[i] = parts[0].strip()
-                    remaining_text = parts[1].strip()
                 else:
-                    # If the delimiter is not found or we've processed 4 delimiters,
-                    # add the remaining text to the current output
+                    # If the delimiter is not found, add the remaining text to the current output and break
                     outputs[i] = remaining_text
+                    remaining_text = ""
                     break
 
-            # If there's still remaining text, add it to the last output
-            if remaining_text and i < 4:
-                outputs[i+1] = remaining_text
+            # If there's still remaining text after processing all delimiters, add it to the next available output
+            if remaining_text:
+                for j in range(i + 1, 5):
+                    if not outputs[j]:
+                        outputs[j] = remaining_text
+                        break
 
         return tuple(outputs)
 
