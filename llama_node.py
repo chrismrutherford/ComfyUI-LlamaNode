@@ -326,26 +326,27 @@ class TextSplitterNode:
     CATEGORY = "LlamaApi"
 
     def split_text(self, input_text, delimiter_1, delimiter_2, delimiter_3, delimiter_4, delimiter_5):
-        delimiters = [delimiter_1, delimiter_2, delimiter_3, delimiter_4, delimiter_5]
-        outputs = [input_text]  # Start with the entire input text as the first output
+        delimiters = [d for d in [delimiter_1, delimiter_2, delimiter_3, delimiter_4, delimiter_5] if d]
+        outputs = []
+        remaining_text = input_text
 
         for i, delimiter in enumerate(delimiters):
-            if delimiter and i < len(outputs):
-                parts = outputs[i].split(delimiter, 1)
-                if len(parts) > 1:
-                    outputs[i] = parts[0].strip()  # Update the current output and strip whitespace
-                    outputs.append(parts[1].strip())  # Add the next part as a new output and strip whitespace
-                else:
-                    outputs.append("")  # If delimiter not found, add an empty string
+            if delimiter in remaining_text:
+                parts = remaining_text.split(delimiter, 1)
+                outputs.append(parts[0].strip())
+                remaining_text = parts[1].strip()
+            else:
+                outputs.append(remaining_text)
+                remaining_text = ""
+
+        # Add any remaining text to the last output
+        if remaining_text:
+            outputs.append(remaining_text)
 
         # Ensure we always return exactly 5 outputs
         outputs = outputs[:5]  # Truncate if we have more than 5
         while len(outputs) < 5:
             outputs.append("")  # Pad with empty strings if we have less than 5
-
-        # Ensure output_1 is not empty
-        if not outputs[0]:
-            outputs[0] = input_text  # If output_1 is empty, use the entire input text
 
         return tuple(outputs)
 
