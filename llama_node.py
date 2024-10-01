@@ -320,14 +320,14 @@ class TextSplitterNode:
             }
         }
     
-    RETURN_TYPES = ("STRING", "STRING", "STRING", "STRING", "STRING")
-    RETURN_NAMES = ("output_1", "output_2", "output_3", "output_4", "output_5")
+    RETURN_TYPES = ("STRING", "STRING", "STRING", "STRING", "STRING", "STRING")
+    RETURN_NAMES = ("output_1", "output_2", "output_3", "output_4", "output_5", "output_6")
     FUNCTION = "split_text"
     CATEGORY = "LlamaApi"
 
     def split_text(self, input_text, delimiter_1, delimiter_2, delimiter_3, delimiter_4, delimiter_5):
         delimiters = [d for d in [delimiter_1, delimiter_2, delimiter_3, delimiter_4, delimiter_5] if d]
-        outputs = [""] * 5  # Initialize with 5 empty strings
+        outputs = [""] * 6  # Initialize with 6 empty strings
 
         if not delimiters:
             # If no delimiters are provided, return the entire input text as the first output
@@ -350,12 +350,9 @@ class TextSplitterNode:
                     remaining_text = ""
                     break
 
-            # If there's still remaining text after processing all delimiters, add it to the next available output
+            # If there's still remaining text after processing all delimiters, add it to the last output
             if remaining_text:
-                for j in range(i + 1, 5):
-                    if not outputs[j]:
-                        outputs[j] = remaining_text
-                        break
+                outputs[5] = remaining_text
 
         return tuple(outputs)
 
