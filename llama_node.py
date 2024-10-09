@@ -383,9 +383,10 @@ class ImageLoaderNode:
         import torch
         import os
 
-        # Create the file path
+        # Create the file path relative to the ComfyUI app directory
         file_name = f"{prefix}{image_number:0{zero_padding}d}{suffix}"
-        path = os.path.join(os.getcwd(), file_name)
+        comfy_ui_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        path = os.path.join(comfy_ui_path, file_name)
 
         success = True
         try:
