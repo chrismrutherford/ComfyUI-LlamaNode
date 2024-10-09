@@ -362,7 +362,10 @@ class ImageLoaderNode:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": "image.png"}),
+                "image_number": ("INT", {"default": 0, "min": 0, "max": 9999999}),
+                "prefix": ("STRING", {"default": "image_"}),
+                "suffix": ("STRING", {"default": ".png"}),
+                "zero_padding": ("INT", {"default": 4, "min": 0, "max": 10}),
             },
             "optional": {
                 "fallback_image": ("IMAGE",),
@@ -373,11 +376,15 @@ class ImageLoaderNode:
     FUNCTION = "load_image"
     CATEGORY = "LlamaApi"
 
-    def load_image(self, path, fallback_image=None):
+    def load_image(self, image_number, prefix, suffix, zero_padding, fallback_image=None):
         from PIL import Image, ImageOps
         import numpy as np
         import torch
         import os
+
+        # Create the file path
+        file_name = f"{prefix}{image_number:0{zero_padding}d}{suffix}"
+        path = os.path.join(os.getcwd(), file_name)
 
         success = True
         try:
