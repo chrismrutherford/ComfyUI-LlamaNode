@@ -363,25 +363,43 @@ class ImageLoaderNode:
         return {
             "required": {
                 "path": ("STRING", {"default": "image.png"}),
+            },
+            "optional": {
+                "fallback_image": ("STRING", {"default": "fallback.png"}),
             }
         }
     
-    RETURN_TYPES = ("IMAGE",)
+    RETURN_TYPES = ("IMAGE", "BOOLEAN")
     FUNCTION = "load_image"
     CATEGORY = "LlamaApi"
 
-    def load_image(self, path):
+    def load_image(self, path, fallback_image=None):
         from PIL import Image, ImageOps
         import numpy as np
         import torch
+        import os
 
-        i = Image.open(path)
-        i = ImageOps.exif_transpose(i)
-        image = i.convert("RGB")
-        image = np.array(image).astype(np.float32) / 255.0
-        image = torch.from_numpy(image)[None,]
-        
-        return (image,)
+        success = True
+        try:
+            if not os.path.exists(path):
+                if fallback_image and os.path.exists(fallback_image):
+                    path = fallback_image
+                    success = False
+                else:
+                    raise FileNotFoundError(f"Image file not found: {path}")
+
+            i = Image.open(path)
+            i = ImageOps.exif_transpose(i)
+            image = i.convert("RGB")
+            image = np.array(image).astype(np.float32) / 255.0
+            image = torch.from_numpy(image)[None,]
+            
+            return (image, success)
+        except Exception as e:
+            print(f"Error loading image: {str(e)}")
+            # Return a blank image (1x1 pixel) if both main and fallback images fail
+            blank_image = torch.zeros((1, 3, 1, 1), dtype=torch.float32)
+            return (blank_image, False)
 
 # Update NODE_CLASS_MAPPINGS
 NODE_CLASS_MAPPINGS["ConditionalRouterNode"] = ConditionalRouterNode
