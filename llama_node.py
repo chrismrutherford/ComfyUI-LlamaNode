@@ -391,7 +391,7 @@ class ImageLoaderNode:
             i = ImageOps.exif_transpose(i)
             image = i.convert("RGB")
             image = np.array(image).astype(np.float32) / 255.0
-            image = torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0)
+            image = torch.from_numpy(image)[None,]
             
             return (image, success)
         except Exception as e:
