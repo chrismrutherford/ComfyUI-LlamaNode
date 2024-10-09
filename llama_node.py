@@ -362,39 +362,26 @@ class ImageLoaderNode:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "file_name": ("STRING", {"default": "image.png"}),
-                "fallback_image": ("IMAGE",),
+                "path": ("STRING", {"default": "image.png"}),
             }
         }
     
-    RETURN_TYPES = ("BOOLEAN", "IMAGE")
-    RETURN_NAMES = ("success", "image")
+    RETURN_TYPES = ("IMAGE",)
     FUNCTION = "load_image"
     CATEGORY = "LlamaApi"
 
-    def load_image(self, file_name, fallback_image):
-        try:
-            from PIL import Image
-            import numpy as np
+    def load_image(self, path):
+        from PIL import Image, ImageOps
+        import numpy as np
+        import torch
 
-            # Attempt to open the image file
-            img = Image.open(file_name)
-            
-            # Convert the image to a numpy array
-            img_array = np.array(img)
-            
-            # Check if the image has an alpha channel and remove it if present
-            if img_array.shape[2] == 4:
-                img_array = img_array[:, :, :3]
-            
-            # Ensure the image is in RGB format
-            if len(img_array.shape) == 2:  # Grayscale image
-                img_array = np.stack((img_array,) * 3, axis=-1)
-            
-            return (True, img_array)
-        except Exception as e:
-            print(f"Error loading image: {str(e)}")
-            return (False, fallback_image)
+        i = Image.open(path)
+        i = ImageOps.exif_transpose(i)
+        image = i.convert("RGB")
+        image = np.array(image).astype(np.float32) / 255.0
+        image = torch.from_numpy(image)[None,]
+        
+        return (image,)
 
 # Update NODE_CLASS_MAPPINGS
 NODE_CLASS_MAPPINGS["ConditionalRouterNode"] = ConditionalRouterNode
