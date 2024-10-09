@@ -176,7 +176,7 @@ class LoopController:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "max_iterations": ("INT", {"default": 10, "min": 1, "max": 100}),
+                "max_iterations": ("INT", {"default": 10, "min": 1, "max": 300000}),
                 "run": ("BOOLEAN", {"default": False}),
             }
         }
