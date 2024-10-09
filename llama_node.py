@@ -365,7 +365,7 @@ class ImageLoaderNode:
                 "path": ("STRING", {"default": "image.png"}),
             },
             "optional": {
-                "fallback_image": ("STRING", {"default": "fallback.png"}),
+                "fallback_image": ("IMAGE",),
             }
         }
     
@@ -382,9 +382,8 @@ class ImageLoaderNode:
         success = True
         try:
             if not os.path.exists(path):
-                if fallback_image and os.path.exists(fallback_image):
-                    path = fallback_image
-                    success = False
+                if fallback_image is not None:
+                    return (fallback_image, False)
                 else:
                     raise FileNotFoundError(f"Image file not found: {path}")
 
@@ -392,11 +391,13 @@ class ImageLoaderNode:
             i = ImageOps.exif_transpose(i)
             image = i.convert("RGB")
             image = np.array(image).astype(np.float32) / 255.0
-            image = torch.from_numpy(image)[None,]
+            image = torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0)
             
             return (image, success)
         except Exception as e:
             print(f"Error loading image: {str(e)}")
+            if fallback_image is not None:
+                return (fallback_image, False)
             # Return a blank image (1x1 pixel) if both main and fallback images fail
             blank_image = torch.zeros((1, 3, 1, 1), dtype=torch.float32)
             return (blank_image, False)
