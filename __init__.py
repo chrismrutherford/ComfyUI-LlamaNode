@@ -1,6 +1,6 @@
 # __init__.py
 
-from .llama_node import LlamaNode, TextInputNode, TextOutputNode, ChunkInputNode, LoopController, IntegerComparisonNode, RegexMatchNode, ConditionalRouterNode, TextSplitterNode, ImageLoaderNode
+from .llama_node import LlamaNode, TextInputNode, TextOutputNode, ChunkInputNode, LoopController, IntegerComparisonNode, RegexMatchNode, ConditionalRouterNode, TextSplitterNode, ImageLoaderNode, TextFindReplaceNode
 
 # A dictionary that contains all nodes you want to export with their names
 # NOTE: names should be globally unique
@@ -14,7 +14,8 @@ NODE_CLASS_MAPPINGS = {
     "RegexMatchNode": RegexMatchNode,
     "ConditionalRouterNode": ConditionalRouterNode,
     "TextSplitterNode": TextSplitterNode,
-    "ImageLoaderNode": ImageLoaderNode
+    "ImageLoaderNode": ImageLoaderNode,
+    "TextFindReplaceNode": TextFindReplaceNode
 }
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes
