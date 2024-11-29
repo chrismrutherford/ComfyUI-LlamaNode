@@ -316,7 +316,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ConditionalRouterNode": "Conditional Router",
     "TextSplitterNode": "Text Splitter",
     "ImageLoaderNode": "Image Loader",
-    "TextFindReplaceNode": "Text Find & Replace"
+    "TextFindReplaceNode": "Text Find & Replace",
+    "TextCleanerNode": "Text Cleaner"
 }
 
 class ConditionalRouterNode:
@@ -466,5 +467,29 @@ class ImageLoaderNode:
 NODE_CLASS_MAPPINGS["ConditionalRouterNode"] = ConditionalRouterNode
 NODE_CLASS_MAPPINGS["TextSplitterNode"] = TextSplitterNode
 NODE_CLASS_MAPPINGS["ImageLoaderNode"] = ImageLoaderNode
+class TextCleanerNode:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "text": ("STRING", {"multiline": True}),
+                "strip_quotes": ("BOOLEAN", {"default": True}),
+                "strip_newlines": ("BOOLEAN", {"default": True}),
+            }
+        }
+    
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "clean_text"
+    CATEGORY = "LlamaApi"
+
+    def clean_text(self, text, strip_quotes, strip_newlines):
+        result = text
+        if strip_quotes:
+            result = result.strip('"\'')
+        if strip_newlines:
+            result = result.replace('\\n', ' ').replace('\n', ' ')
+        return (result,)
+
+NODE_CLASS_MAPPINGS["TextCleanerNode"] = TextCleanerNode
 NODE_CLASS_MAPPINGS["TextFindReplaceNode"] = TextFindReplaceNode
 
