@@ -28,5 +28,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "RegexMatchNode": "Regex Match",
     "ConditionalRouterNode": "Conditional Router",
     "TextSplitterNode": "Text Splitter",
-    "ImageLoaderNode": "Image Loader"
+    "ImageLoaderNode": "Image Loader",
+    "TextFindReplaceNode": "Text Find & Replace"
 }
