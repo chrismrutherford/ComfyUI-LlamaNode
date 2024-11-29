@@ -283,7 +283,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "RegexMatchNode": "Regex Match",
     "ConditionalRouterNode": "Conditional Router",
     "TextSplitterNode": "Text Splitter",
-    "ImageLoaderNode": "Image Loader"
+    "ImageLoaderNode": "Image Loader",
+    "TextFindReplaceNode": "Text Find & Replace"
 }
 
 class ConditionalRouterNode:
@@ -357,6 +358,24 @@ class TextSplitterNode:
 
         return tuple(outputs)
 
+class TextFindReplaceNode:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "text": ("STRING", {"multiline": True}),
+                "find": ("STRING", {"multiline": False}),
+                "replace": ("STRING", {"multiline": False}),
+            }
+        }
+    
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "find_and_replace"
+    CATEGORY = "LlamaApi"
+
+    def find_and_replace(self, text, find, replace):
+        return (text.replace(find, replace),)
+
 class ImageLoaderNode:
     @classmethod
     def INPUT_TYPES(cls):
@@ -415,4 +434,5 @@ class ImageLoaderNode:
 NODE_CLASS_MAPPINGS["ConditionalRouterNode"] = ConditionalRouterNode
 NODE_CLASS_MAPPINGS["TextSplitterNode"] = TextSplitterNode
 NODE_CLASS_MAPPINGS["ImageLoaderNode"] = ImageLoaderNode
+NODE_CLASS_MAPPINGS["TextFindReplaceNode"] = TextFindReplaceNode
 
