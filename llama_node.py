@@ -23,15 +23,29 @@ class ChunkInputNode:
 
     def read_specific_paragraph(self, file_path, chunk_to_read):
         print(f"Reading chunk {chunk_to_read} from {file_path}")
-        if not self.file_path or self.file_path != file_path:
-            self.file_path = file_path
+        
+        # Check if file exists
+        if not os.path.exists(file_path):
             if self.file:
                 self.file.close()
-            if not os.path.exists(self.file_path):
-                return ("File not found", False)
-            self.file = open(self.file_path, 'r')
+                self.file = None
+            self.file_path = None
+            return ("File not found", False)
+            
+        # Open new file if path changed
+        if not self.file_path or self.file_path != file_path:
+            if self.file:
+                self.file.close()
+            self.file_path = file_path
+            try:
+                self.file = open(self.file_path, 'r')
+            except Exception as e:
+                self.file = None
+                self.file_path = None
+                return (f"Error opening file: {str(e)}", False)
 
-        self.file.seek(0)
+        try:
+            self.file.seek(0)
         current_chunk = 0
         paragraph = []
         more_chunks = True
