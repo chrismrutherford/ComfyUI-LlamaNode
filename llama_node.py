@@ -46,9 +46,9 @@ class ChunkInputNode:
 
         try:
             self.file.seek(0)
-        current_chunk = 0
-        paragraph = []
-        more_chunks = True
+            current_chunk = 0
+            paragraph = []
+            more_chunks = True
 
         for line in self.file:
             if line.strip():
