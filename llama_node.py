@@ -50,7 +50,25 @@ class ChunkInputNode:
             paragraph = []
             more_chunks = True
 
-        for line in self.file:
+            for line in self.file:
+                if line.strip():
+                    paragraph.append(line)
+                elif paragraph:
+                    if current_chunk == chunk_to_read:
+                        return (''.join(paragraph), True)
+                    current_chunk += 1
+                    paragraph = []
+
+            if paragraph and current_chunk == chunk_to_read:
+                return (''.join(paragraph), True)
+            elif current_chunk < chunk_to_read:
+                more_chunks = False
+                return ("End of file reached", False)
+            else:
+                return ("Chunk not found", False)
+                
+        except Exception as e:
+            return (f"Error reading file: {str(e)}", False)
             if line.strip():
                 paragraph.append(line)
             elif paragraph:
